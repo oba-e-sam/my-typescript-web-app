@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Bed, Bath, Square, DollarSign, Eye } from 'lucide-react';
 import { Property } from '../types';
@@ -8,6 +8,8 @@ interface PropertyCardProps {
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
+  const [imageError, setImageError] = useState(false);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -16,14 +18,20 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     }).format(price);
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <div className="property-card group relative bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
       {/* Image Container */}
       <div className="relative h-64 overflow-hidden">
         <img
-          src={property.images[0] || 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg'}
+          src={imageError ? 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg' : (property.images[0] || 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg')}
           alt={property.title}
           className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
+          onError={handleImageError}
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         

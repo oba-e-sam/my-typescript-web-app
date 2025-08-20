@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import Loading from '../components/Loading';
+import { ValidationError, handleError, logError } from '../utils/errorHandler';
 import { User } from '../types';
 
 const Login = () => {
@@ -20,6 +22,17 @@ const Login = () => {
     setError('');
 
     try {
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        throw new ValidationError('Please enter a valid email address');
+      }
+
+      // Validate password length
+      if (password.length < 6) {
+        throw new ValidationError('Password must be at least 6 characters long');
+      }
+
       // Mock authentication - in a real app, this would be an API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -56,7 +69,9 @@ const Login = () => {
       login(mockUser);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid email or password');
+      const appError = handleError(err);
+      logError(appError, 'Login');
+      setError(appError.message);
     } finally {
       setLoading(false);
     }
@@ -131,8 +146,7 @@ const Login = () => {
             >
               {loading ? (
                 <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Signing In...
+                  <Loading size="sm" text="Signing In..." />
                 </div>
               ) : (
                 'Sign In'

@@ -100,6 +100,9 @@ const Navbar = () => {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-gray-700 hover:text-blue-600 transition-colors"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -108,7 +111,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
+          <div id="mobile-menu" className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-4">
               <Link
                 to="/properties"

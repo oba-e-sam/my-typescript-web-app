@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Navbar } from './components/Navbar';
+import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -8,6 +8,8 @@ import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 import Chat from './pages/Chat';
+import ErrorBoundary from './components/ErrorBoundary';
+import Loading from './components/Loading';
 import { User, AuthContextType } from './types';
 import { AuthContext } from './contexts/AuthContext';
 
@@ -42,36 +44,34 @@ function App() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <Loading size="lg" text="Initializing..." fullScreen />;
   }
 
   return (
-    <AuthContext.Provider value={authValue}>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
-            <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
-            <Route path="/properties" element={<Properties />} />
-            <Route path="/property/:id" element={<PropertyDetail />} />
-            <Route 
-              path="/dashboard" 
-              element={user ? <Dashboard /> : <Navigate to="/login" />} 
-            />
-            <Route 
-              path="/chat" 
-              element={user ? <Chat /> : <Navigate to="/login" />} 
-            />
-          </Routes>
-        </div>
-      </Router>
-    </AuthContext.Provider>
+    <ErrorBoundary>
+      <AuthContext.Provider value={authValue}>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+              <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
+              <Route path="/properties" element={<Properties />} />
+              <Route path="/property/:id" element={<PropertyDetail />} />
+              <Route 
+                path="/dashboard" 
+                element={user ? <Dashboard /> : <Navigate to="/login" />} 
+              />
+              <Route 
+                path="/chat" 
+                element={user ? <Chat /> : <Navigate to="/login" />} 
+              />
+            </Routes>
+          </div>
+        </Router>
+      </AuthContext.Provider>
+    </ErrorBoundary>
   );
 }
 
